@@ -12,6 +12,7 @@ export type AppPropsWithLayout = AppProps & {
 
 export type ChildrenProps = {
   children: ReactNode;
+  noLayout?: boolean;
 };
 
 export type IToken = {

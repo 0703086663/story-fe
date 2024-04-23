@@ -13,15 +13,27 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-const register = () => {
+const login = () => {
+  const router = useRouter();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    axios
+      .post('http://localhost:3001/auth/signin', {
+        email: data.get('email'),
+        password: data.get('password'),
+      })
+      .then(function (response) {
+        localStorage.setItem('authToken', JSON.stringify(response.data.token));
+        router.push('/');
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (
@@ -96,4 +108,4 @@ const register = () => {
   );
 };
 
-export default register;
+export default login;

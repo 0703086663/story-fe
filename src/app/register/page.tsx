@@ -13,16 +13,27 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-const login = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+const register = () => {
+  const router = useRouter();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('lastName') + ' ' + data.get('firstName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    axios
+      .post('http://localhost:3001/auth/signup', {
+        name: data.get('lastName') + ' ' + data.get('firstName'),
+        email: data.get('email'),
+        password: data.get('password'),
+      })
+      .then(function (response) {
+        router.push('/login');
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (
@@ -118,4 +129,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default register;

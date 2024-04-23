@@ -21,7 +21,7 @@ const logoStyle = {
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
-
+  const token = localStorage.getItem('authToken');
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -140,26 +140,41 @@ const Header = () => {
                 alignItems: 'center',
               }}
             >
-              <Button
-                color="primary"
-                variant="text"
-                size="small"
-                component="a"
-                href="/material-ui/getting-started/templates/sign-in/"
-                target="_blank"
-              >
-                Sign in
-              </Button>
-              <Button
-                color="primary"
-                variant="contained"
-                size="small"
-                component="a"
-                href="/material-ui/getting-started/templates/sign-up/"
-                target="_blank"
-              >
-                Sign up
-              </Button>
+              {!token ? (
+                <>
+                  <Button
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    component="a"
+                    href="/login"
+                  >
+                    Sign in
+                  </Button>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="small"
+                    component="a"
+                    href="/register"
+                  >
+                    Sign up
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  component="a"
+                  onClick={() => {
+                    window.location.reload();
+                    localStorage.removeItem('authToken');
+                  }}
+                >
+                  Log out
+                </Button>
+              )}
             </Box>
             <Box sx={{ display: { sm: '', md: 'none' } }}>
               <Button
