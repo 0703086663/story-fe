@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useLocalStorage } from '@/hooks/use-storage';
 
 const logoStyle = {
   width: '140px',
@@ -21,10 +22,13 @@ const logoStyle = {
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
-  const token = localStorage.getItem('authToken');
+  const [token, setToken] = useLocalStorage('authToken','');
+  // const token = window.localStorage.getItem('authToken');
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
+
+  console.log(token)
 
   const scrollToSection = (sectionId: string) => {
     const sectionElement = document.getElementById(sectionId);
