@@ -21,11 +21,8 @@ import TablePaginationActions from '@mui/material/TablePagination/TablePaginatio
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(
-  'pk_test_51LCjUmGXzbc60gITz8yj4uHqkougbdm9OfES09TPBSSecYthkmjdteUAxoDJLOLozcd2LcZxkrQeyIK0x5vjO7Ie00S1fLfs2x',
-);
+import { Elements, PaymentElement } from '@stripe/react-stripe-js';
+import StripePaymentForm from '@/components/StripePaymentForm';
 
 export default function StoryDetails({ params }: { params: { slug: string } }) {
   const router = useRouter();
@@ -335,71 +332,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
           })}
         </div>
       </div>
-      <PaymentPopup open={openPopup} handleClose={handleClosePopup} />
+      <StripePaymentForm open={openPopup} handleClose={handleClosePopup} />
     </div>
   );
 }
-
-const PaymentPopup = ({ open, handleClose }) => {
-  const [loading, setLoading] = useState(false);
-
-  const handleFormSubmit = async event => {
-    event.preventDefault();
-    setLoading(true);
-    const stripe = await stripePromise;
-    const elements = stripe.elements();
-    const card = elements.create('card');
-    const { token, error } = await stripe.createToken(card);
-
-    if (error) {
-      console.error(error);
-    } else {
-      console.log(token.id);
-    }
-
-    setLoading(false);
-  };
-
-  return (
-    <Dialog
-      sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
-      maxWidth="xs"
-      open={open}
-      onClose={handleClose}
-    >
-      <form id="payment-form" onSubmit={handleFormSubmit}>
-        <DialogTitle>Payment</DialogTitle>
-        <DialogContent>
-          <div className="mb-4">
-            <label
-              htmlFor="card-holder-name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Cardholder Name
-            </label>
-            <input
-              type="text"
-              id="card-holder-name"
-              className="mt-1 p-1 border rounded-md w-[100%]"
-              placeholder="John Doe"
-            />
-          </div>
-          <div id="card-element" className="mb-4"></div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : 'Submit Payment'}
-          </Button>
-          <Button onClick={handleClose} color="secondary">
-            Close
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
-  );
-};
