@@ -53,15 +53,6 @@ export default function CheckoutForm({ open, handleClose }: any) {
         className="flex flex-col "
       >
         <PaymentElement id="payment-element" />
-        {/* <button disabled={isLoading || !stripe || !elements} id="submit">
-          <span id="button-text">
-            {isLoading ? (
-              <div className="spinner" id="spinner"></div>
-            ) : (
-              'Pay now'
-            )}
-          </span>
-        </button> */}
         <Button
           type="submit"
           variant="contained"
@@ -77,7 +68,6 @@ export default function CheckoutForm({ open, handleClose }: any) {
             )}
           </span>
         </Button>
-        {/* Show any error or success messages */}
         {message && <div id="payment-message">{message}</div>}
       </form>
     </Dialog>

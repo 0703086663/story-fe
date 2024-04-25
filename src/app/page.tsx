@@ -93,9 +93,9 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="mb-3 text-2xl font-semibold">Truyện yêu thích</h2>
-            {['cac', 'cac'].map(v => {
+            {['cac', 'cac'].map((v, idx) => {
               return (
-                <p className="m-0 max-w-[30ch] text-sm opacity-50">
+                <p key={idx} className="m-0 max-w-[30ch] text-sm opacity-50">
                   Learn about Next.js in an interactive course
                   with&nbsp;quizzes!
                 </p>
@@ -107,12 +107,14 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="mb-3 text-2xl font-semibold">Thể loại truyện </h2>
-            {['cac', 'cac', 'cac', 'cac', 'cac'].map(v => {
+            {['cac', 'cac', 'cac', 'cac', 'cac'].map((v, idx) => {
               return (
-                <p className="m-0 max-w-[30ch] text-sm opacity-50">
-                  Learn about Next.js in an interactive course
-                  with&nbsp;quizzes!
-                </p>
+                <div key={idx}>
+                  <p className="m-0 max-w-[30ch] text-sm opacity-50">
+                    Learn about Next.js in an interactive course
+                    with&nbsp;quizzes!
+                  </p>
+                </div>
               );
             })}
           </a>

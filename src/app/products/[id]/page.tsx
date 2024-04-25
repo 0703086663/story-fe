@@ -29,6 +29,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openPopup, setOpenPopup] = useState(false);
+  const [chapter, setChapter] = useState();
 
   const rows = [
     {
@@ -45,7 +46,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
       author: 'Author 2',
       genre: 'Genre 2',
       publishDate: '2022-01-02',
-      price: 10,
+      price: 50,
     },
     {
       id: 3,
@@ -61,7 +62,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
       author: 'Author 4',
       genre: 'Genre 4',
       publishDate: '2022-01-04',
-      price: 5,
+      price: 50,
     },
     {
       id: 5,
@@ -80,11 +81,12 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
       price: 15,
     },
   ];
-  const handleRowClick = (index, price) => {
-    if (price > 0) {
+  const handleRowClick = row => {
+    if (row.price > 0) {
+      setChapter({ ...row, productId: params?.id });
       setOpenPopup(true);
     } else {
-      router.push(`/chapters/${index}`);
+      router.push(`/chapters/${row.id}`);
     }
   };
 
@@ -258,7 +260,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                 <TableRow
                   key={index}
                   className="cursor-pointer"
-                  onClick={() => handleRowClick(index, row?.price)}
+                  onClick={() => handleRowClick(row)}
                   sx={row?.price > 0 && { backgroundColor: 'gray' }}
                 >
                   <TableCell component="th" scope="row">
@@ -303,7 +305,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(val => {
             return (
-              <div className={`relative`} key={1}>
+              <div className={`relative`} key={val}>
                 <div className="flex items-center relative bg-stone-50 rounded-3xl shadow overflow-hidden">
                   <img
                     src={
@@ -332,7 +334,11 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
           })}
         </div>
       </div>
-      <StripePaymentForm open={openPopup} handleClose={handleClosePopup} />
+      <StripePaymentForm
+        open={openPopup}
+        handleClose={handleClosePopup}
+        chapter={chapter}
+      />
     </div>
   );
 }

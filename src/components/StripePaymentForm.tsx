@@ -4,22 +4,54 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
 import CheckoutForm from './CheckoutForm';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const stripePromise = loadStripe(
   'pk_test_51LCjUmGXzbc60gITz8yj4uHqkougbdm9OfES09TPBSSecYthkmjdteUAxoDJLOLozcd2LcZxkrQeyIK0x5vjO7Ie00S1fLfs2x',
 );
-const StripePaymentForm = ({ open, handleClose }: any) => {
+const StripePaymentForm = ({ open, handleClose, chapter }: any) => {
   //useEffect gọi api lấy clientSecret kèm data {amount, chapterId}
+
+  const [clientSecret, setClientSecret] = useState('');
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    if (chapter?.id) {
+      axios
+        .post('http://localhost:3001/payment', {
+          amount: chapter?.price,
+          description: JSON.stringify({
+            chapterId: chapter?.id,
+            productId: chapter?.productId,
+          }),
+        })
+        .then(function (response) {
+          console.log(response.data);
+          setClientSecret(response.data.paymentIntent.client_secret);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+  }, [chapter]);
+
   return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        clientSecret:
-          'pi_3P99t1GXzbc60gIT0UIKVKfL_secret_LOBStpCFFhgjtzID3QhhUyWGG',
-      }}
-    >
-      <CheckoutForm open={open} handleClose={handleClose} />
-    </Elements>
+    <>
+      {clientSecret && (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            clientSecret,
+          }}
+        >
+          <CheckoutForm
+            open={open}
+            handleClose={handleClose}
+            chapter={chapter}
+          />
+        </Elements>
+      )}
+    </>
   );
 };
 
