@@ -89,6 +89,7 @@ video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  letter-spacing: 0.5px;
 }
 article,
 aside,
