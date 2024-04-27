@@ -55,11 +55,11 @@ export default function Home() {
                           fill="none"
                           className="transition-all duration-300 hover:scale-125 hover:fill-red-500"
                         >
-                          <g stroke="none" stroke-width="1" fill-rule="evenodd">
+                          <g stroke="none" strokeWidth="1" fillRule="evenodd">
                             <g
                               transform="translate(-261.000000, -362.000000)"
                               stroke="#000000"
-                              fill-rule="nonzero"
+                              fillRule="nonzero"
                             >
                               <path
                                 d="M271.80561,362.005196 C267.830207,361.835631 268.000988,365.87286 268.000988,365.87286 C268.000988,365.87286 268.170414,361.835631 264.194334,362.005196 C262.491268,362.077112 259.26676,364.111232 262.159871,368.422273 C262.659564,369.166072 264.62098,372.025314 268.04412,377 C269.520156,375.024601 273.091211,369.537971 273.840072,368.422273 C276.733861,364.111232 273.50732,362.077112 271.80561,362.005196 Z"

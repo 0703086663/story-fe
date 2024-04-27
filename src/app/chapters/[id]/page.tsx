@@ -1,14 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import SettingsIcon from '@mui/icons-material/Settings';
 
-// Example function to fetch chapter details from an API
-async function fetchChapterDetails(chapterId) {
-  // Implement your logic to fetch chapter details from an API
-  // For demonstration, I'm returning a dummy chapter object
+async function fetchChapterDetails(chapterId: number) {
   return {
     id: chapterId,
-    title: `Chapter ${chapterId} Title`,
-    content: `This is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of Chapter ${chapterId}.`,
+    name: 'Đây là tên chapter 1',
+    content: `This is the content of ChapterThis is the content of ChapterTcontent of ChapterThis is the content of ChapterTcontent of ChapterThis is the content of ChapterTcontent of ChapterThis is the content of ChapterTcontent of ChapterThis is the content of ChapterTcontent of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of ChapterThis is the content of Chapter ${chapterId}.`,
   };
 }
 
@@ -33,34 +32,53 @@ export default function ChapterDetailsPage({
 
   console.log(params);
   return (
-    <main className="mx-[200px] flex min-h-screen flex-col items-center p-24">
-      <h1 className="text-3xl font-bold mb-6">Chapter Details</h1>
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">{chapter?.title}</h2>
-        <p className="text-gray-700">{chapter?.content}</p>
-      </div>
-      {/* <button
-        // onClick={handleNextChapter}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        Next Chapter
-      </button> */}
-      <div className="flex mt-4 space-x-4">
-        {Number(params.id) !== 0 && (
-          <button
-            //   onClick={handlePreviousChapter}
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg shadow-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            //   disabled={currentChapterId === 1}
+    <main className="relative mt-28 px-[30px] flex flex-col items-center justify-center">
+      <div className="w-full lg:max-w-[1200px] lg:px-6 flex flex-col justify-center">
+        <h1 className="text-3xl font-bold mb-6 text-center">{chapter?.name}</h1>
+        <div className="hidden lg:flex justify-center gap-2 lg:sticky lg:top-[90px]">
+          {Number(params.id) !== 0 && (
+            <Button
+              variant="contained"
+              className="bg-gray-400 hover:bg-gray-600"
+            >
+              Previous
+            </Button>
+          )}
+
+          <Button
+            variant="outlined"
+            startIcon={<SettingsIcon />}
+            className="lg:bg-white lg:hover:bg-white"
           >
-            Previous Chapter
-          </button>
+            Settings
+          </Button>
+
+          <Button variant="contained">Next</Button>
+        </div>
+
+        <div>
+          <p className="text-gray-700 py-5 leading-10 tracking-wider">
+            {chapter?.content}
+          </p>
+        </div>
+      </div>
+
+      <div className="lg:hidden w-full flex justify-between gap-2 fixed bottom-[10px] px-[30px]">
+        {Number(params.id) !== 0 && (
+          <Button variant="contained" className="bg-gray-400 hover:bg-gray-600">
+            Previous
+          </Button>
         )}
-        <button
-          //   onClick={handleNextChapter}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+
+        <Button
+          variant="outlined"
+          startIcon={<SettingsIcon />}
+          className="bg-white hover:bg-white"
         >
-          Next Chapter
-        </button>
+          Settings
+        </Button>
+
+        <Button variant="contained">Next</Button>
       </div>
     </main>
   );

@@ -22,9 +22,9 @@ function Copyright(props: any) {
 
 const Footer = () => {
   return (
-    <div className="max-h-[90px]">
+    <footer className="max-h-[90px]">
       <Copyright sx={{ mt: 4, mb: 4 }} />
-    </div>
+    </footer>
   );
 };
 

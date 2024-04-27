@@ -18,7 +18,7 @@ const StripePaymentForm = ({ open, handleClose, chapter }: any) => {
     // Create PaymentIntent as soon as the page loads
     if (chapter?.id) {
       axios
-        .post('http://localhost:3001/payment', {
+        .post('http://localhost:3001/payment/createIntent', {
           amount: chapter?.price,
           description: JSON.stringify({
             chapterId: chapter?.id,
@@ -27,7 +27,7 @@ const StripePaymentForm = ({ open, handleClose, chapter }: any) => {
         })
         .then(function (response) {
           console.log(response.data);
-          setClientSecret(response.data.paymentIntent.client_secret);
+          setClientSecret(response.data.paymentResult.client_secret);
         })
         .catch(function (error) {
           console.log(error);
