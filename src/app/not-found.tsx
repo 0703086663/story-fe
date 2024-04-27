@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const NotFound = () => {
   return (
@@ -17,10 +18,17 @@ const NotFound = () => {
       className="min-h-[calc(100vh-120px)]"
     >
       <Container maxWidth="md">
-        <Grid container spacing={2}>
-          <Grid xs={6}>
+        <Grid
+          container
+          spacing={2}
+          className="flex flex-col lg:flex-row justify-center items-center gap-4"
+        >
+          <Grid
+            xs={6}
+            className="lg:order-1 flex flex-col justify-center items-center"
+          >
             <Typography variant="h1">404</Typography>
-            <Typography variant="h6">
+            <Typography variant="h6" className="text-center">
               The page you’re looking for doesn’t exist.
             </Typography>
             <Link href="/">
@@ -28,14 +36,6 @@ const NotFound = () => {
                 Back Home
               </Button>
             </Link>
-          </Grid>
-          <Grid xs={6}>
-            <img
-              src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569__340.jpg"
-              alt=""
-              width={500}
-              height={250}
-            />
           </Grid>
         </Grid>
       </Container>
