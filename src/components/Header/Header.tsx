@@ -13,8 +13,10 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ListItemIcon } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import Link from 'next/link';
+import IconButton from '@mui/material/IconButton';
+
 const logoStyle = {
   width: '140px',
   height: 'auto',
@@ -100,14 +102,16 @@ const Header = ({ token }: any) => {
                 <MenuItem
                   onClick={() => router.push('/products-management')}
                   sx={{ py: '6px', px: '12px' }}
+                  className="hover:bg-inherit hover:[&>*]:text-black"
                 >
                   <Typography variant="body2" color="text.primary">
-                    Product Management
+                    My Product
                   </Typography>
                 </MenuItem>
                 <MenuItem
                   onClick={() => router.push('/categories-management')}
                   sx={{ py: '6px', px: '12px' }}
+                  className="hover:bg-inherit hover:[&>*]:text-black"
                 >
                   <Typography variant="body2" color="text.primary">
                     Category Management
@@ -145,18 +149,29 @@ const Header = ({ token }: any) => {
                 </Button>
               </>
             ) : (
-              <Button
-                color="primary"
-                variant="text"
-                size="small"
-                component="a"
-                onClick={() => {
-                  window.location.reload();
-                  localStorage.removeItem('authToken');
-                }}
-              >
-                Log out
-              </Button>
+              <>
+                <IconButton
+                  aria-label="delete"
+                  className="text-red-600 hover:bg-red-50"
+                  size="small"
+                  href="/list"
+                  title="Favorite | Reading list"
+                >
+                  <FavoriteIcon fontSize="small" />
+                </IconButton>
+                <Button
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  component="a"
+                  onClick={() => {
+                    window.location.reload();
+                    localStorage.removeItem('authToken');
+                  }}
+                >
+                  Log out
+                </Button>
+              </>
             )}
           </Box>
           <Box sx={{ display: { sm: '', md: 'none' } }}>
