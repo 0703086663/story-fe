@@ -14,6 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ListItemIcon } from '@mui/material';
+import Link from 'next/link';
 const logoStyle = {
   width: '140px',
   height: 'auto',
@@ -83,15 +84,17 @@ const Header = ({ token }: any) => {
               px: 0,
             }}
           >
-            <Image
-              src={
-                'https://assets-global.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12e6faf73568658154dae_SitemarkDefault.svg'
-              }
-              width={140}
-              height={140}
-              style={logoStyle}
-              alt="logo of sitemark"
-            />
+            <Link href="/">
+              <Image
+                src={
+                  'https://assets-global.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12e6faf73568658154dae_SitemarkDefault.svg'
+                }
+                width={140}
+                height={140}
+                style={logoStyle}
+                alt="logo of sitemark"
+              />
+            </Link>
             {token && (
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <MenuItem
