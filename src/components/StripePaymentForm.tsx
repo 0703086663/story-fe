@@ -15,10 +15,9 @@ const StripePaymentForm = ({ open, handleClose, chapter }: any) => {
 
   const [clientSecret, setClientSecret] = useState('');
   useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
     if (chapter?.id) {
       axios
-        .post('http://localhost:3001/payment', {
+        .post('http://localhost:3001/payment/createIntent', {
           amount: chapter?.price,
           description: JSON.stringify({
             chapterId: chapter?.id,

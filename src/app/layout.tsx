@@ -13,7 +13,7 @@ export default async function Layout({ children }: ChildrenProps) {
   return (
     <html lang="en">
       <body>
-        <Header />
+        {/* <Header /> */}
         {children}
         <Footer />
       </body>

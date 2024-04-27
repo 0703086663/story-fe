@@ -28,13 +28,17 @@ const login = () => {
         password: data.get('password'),
       })
       .then(function (response) {
-        localStorage.setItem('authToken', JSON.stringify(response.data.token));
+        localStorage.setItem('authToken', JSON.stringify(response.data.data));
         router.push('/');
       })
       .catch(function (error) {
         console.log(error);
       });
   };
+
+  React.useEffect(() => {
+    router.prefetch('/');
+  }, [router]);
 
   return (
     <Container

@@ -12,17 +12,17 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import Image from 'next/image';
-
+import { useRouter } from 'next/navigation';
+import { ListItemIcon } from '@mui/material';
 const logoStyle = {
   width: '140px',
   height: 'auto',
   cursor: 'pointer',
 };
 
-const Header = () => {
+const Header = ({ token }: any) => {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const token = '';
-
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -92,48 +92,26 @@ const Header = () => {
               style={logoStyle}
               alt="logo of sitemark"
             />
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <MenuItem
-                onClick={() => scrollToSection('features')}
-                sx={{ py: '6px', px: '12px' }}
-              >
-                <Typography variant="body2" color="text.primary">
-                  Features
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                onClick={() => scrollToSection('testimonials')}
-                sx={{ py: '6px', px: '12px' }}
-              >
-                <Typography variant="body2" color="text.primary">
-                  Testimonials
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                onClick={() => scrollToSection('highlights')}
-                sx={{ py: '6px', px: '12px' }}
-              >
-                <Typography variant="body2" color="text.primary">
-                  Highlights
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                onClick={() => scrollToSection('pricing')}
-                sx={{ py: '6px', px: '12px' }}
-              >
-                <Typography variant="body2" color="text.primary">
-                  Pricing
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                onClick={() => scrollToSection('faq')}
-                sx={{ py: '6px', px: '12px' }}
-              >
-                <Typography variant="body2" color="text.primary">
-                  FAQ
-                </Typography>
-              </MenuItem>
-            </Box>
+            {token && (
+              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                <MenuItem
+                  onClick={() => router.push('/products-management')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Product Management
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => router.push('/categories-management')}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Category Management
+                  </Typography>
+                </MenuItem>
+              </Box>
+            )}
           </Box>
           <Box
             sx={{
