@@ -1,11 +1,6 @@
 'use client';
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
   Paper,
   Table,
   TableBody,
@@ -18,17 +13,17 @@ import {
   Typography,
 } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
-import Link from 'next/link';
-import React, {  useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Elements, PaymentElement } from '@stripe/react-stripe-js';
-import StripePaymentForm from '@/components/StripePaymentForm';
 import Header from '@/components/Header/Header';
 import AddIcon from '@mui/icons-material/Add';
 import CreateForm from './create';
 import axios from 'axios';
 import { formatDatetime } from '@/utils/format';
+import Image from 'next/image';
 
+// TODO: Create manually & AI
+// Chon categories (multi select) || tao category (neu ko ton tai)
 export default function Products({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const [page, setPage] = React.useState(0);
@@ -65,8 +60,8 @@ export default function Products({ params }: { params: { slug: string } }) {
   return (
     <>
       <Header token={token} />
-      <div className="mx-auto max-w-4xl px-8 py-24">
-        <div>
+      <main className="relative mt-28 px-[30px] flex flex-col items-center justify-center">
+        <div className="w-full lg:max-w-[1200px] lg:px-6 flex flex-col justify-center">
           <TableContainer sx={{ boxShadow: 'none' }} component={Paper}>
             <div className="flex justify-between">
               <Typography variant="h6">Stories Management</Typography>
@@ -83,7 +78,7 @@ export default function Products({ params }: { params: { slug: string } }) {
             </div>
             <Table aria-label="simple table">
               <TableHead>
-                <TableRow>
+                <TableRow className="[&>*]:font-bold">
                   <TableCell>Name</TableCell>
                   <TableCell>Author</TableCell>
                   <TableCell>description</TableCell>
@@ -109,7 +104,7 @@ export default function Products({ params }: { params: { slug: string } }) {
                     <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
                     <TableCell>{row?.viewCount}</TableCell>
                     <TableCell>
-                      <img src={row.image} height={100} width={300} alt="" />
+                      <Image src={row.image} height={100} width={300} alt="" />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -143,7 +138,7 @@ export default function Products({ params }: { params: { slug: string } }) {
             </Table>
           </TableContainer>
         </div>
-      </div>
+      </main>
       <CreateForm open={openPopup} handleClose={handleClosePopup} />
     </>
   );

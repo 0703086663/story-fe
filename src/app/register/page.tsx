@@ -16,6 +16,7 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+// TODO: Validate form
 const register = () => {
   const router = useRouter();
 

@@ -28,6 +28,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CreateForm from './create';
 import axios from 'axios';
 
+// TODO: Ko can create cung dc.
 export default function Categories({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const [page, setPage] = React.useState(0);
@@ -66,8 +67,8 @@ export default function Categories({ params }: { params: { slug: string } }) {
   return (
     <>
       <Header token={token} />
-      <div className="mx-auto max-w-4xl px-8 py-24">
-        <div>
+      <main className="relative mt-28 px-[30px] flex flex-col items-center justify-center">
+        <div className="w-full lg:max-w-[1200px] lg:px-6 flex flex-col justify-center">
           <TableContainer sx={{ boxShadow: 'none' }} component={Paper}>
             <div className="flex justify-between">
               <Typography variant="h6">Categories Management</Typography>
@@ -84,7 +85,7 @@ export default function Categories({ params }: { params: { slug: string } }) {
             </div>
             <Table aria-label="simple table">
               <TableHead>
-                <TableRow>
+                <TableRow className="[&>*]:font-bold">
                   <TableCell>Name</TableCell>
                   <TableCell>Description</TableCell>
                 </TableRow>
@@ -134,7 +135,7 @@ export default function Categories({ params }: { params: { slug: string } }) {
             </Table>
           </TableContainer>
         </div>
-      </div>
+      </main>
       <CreateForm
         open={openPopup}
         handleClose={handleClosePopup}
