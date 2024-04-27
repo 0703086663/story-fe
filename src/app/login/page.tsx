@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,23 +16,32 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-const login = () => {
+const Login = () => {
   const router = useRouter();
+  const [submit, setSubmit] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorText, setErrorText] = useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    setSubmit(true);
+
+    if (!email || !password) {
+      return;
+    }
+
     axios
       .post('http://localhost:3001/auth/signin', {
-        email: data.get('email'),
-        password: data.get('password'),
+        email,
+        password,
       })
       .then(function (response) {
         localStorage.setItem('authToken', JSON.stringify(response.data.data));
         router.push('/');
       })
       .catch(function (error) {
-        console.log(error);
+        setErrorText(error.response.data.message);
       });
   };
 
@@ -71,6 +80,11 @@ const login = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={e => {
+              setEmail(e.target.value);
+            }}
+            error={submit && !email}
+            helperText={submit && !email ? 'This field is required' : ''}
           />
           <TextField
             margin="normal"
@@ -81,11 +95,21 @@ const login = () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={e => {
+              setPassword(e.target.value);
+            }}
+            error={submit && !password}
+            helperText={submit && !password ? 'This field is required' : ''}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
+          <span
+            className={`text-[#d32f2f] ${errorText && submit ? 'block' : 'hidden'}`}
+          >
+            {errorText}
+          </span>
           <Button
             type="submit"
             fullWidth
@@ -112,4 +136,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;
