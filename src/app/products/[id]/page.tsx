@@ -20,81 +20,46 @@ import StripePaymentForm from '@/components/StripePaymentForm';
 import Image from 'next/image';
 import Rating from '@mui/material/Rating';
 import Header from '@/components/Header/Header';
+import axios from 'axios';
+import { formatDatetime } from '@/utils/format';
 
 enum Status {
   PROGRESS = 'PROGRESS',
   DONE = 'DONE',
 }
 
-export default function StoryDetails({ params }: { params: { slug: string } }) {
+export default function StoryDetails({ params }: { params: { id: number } }) {
   const router = useRouter();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openPopup, setOpenPopup] = useState(false);
   const [chapter, setChapter] = useState();
-
+  const [rows, setRows] = useState<any>([]);
   const [token, setToken] = React.useState('');
+  const [product, setProduct] = useState<any>({});
+  const [productFamiliar, setProductFamiliar] = useState<any>([]);
 
   React.useLayoutEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
-  }, []);
+    axios.get(`http://localhost:3001/chapter`).then(function (response) {
+      setRows(response.data.filter(v => v.productId == params.id));
+    });
+    axios
+      .get(`http://localhost:3001/product/${params.id}`)
+      .then(function (response) {
+        setProduct(response.data);
+      });
 
-  const rows = [
-    {
-      id: 1,
-      name: 'Chapter 1',
-      author: 'Author 1',
-      genre: 'Genre 1',
-      publishDate: '2022-01-01',
-      price: 0,
-    },
-    {
-      id: 2,
-      name: 'Chapter 2',
-      author: 'Author 2',
-      genre: 'Genre 2',
-      publishDate: '2022-01-02',
-      price: 50,
-    },
-    {
-      id: 3,
-      name: 'Chapter 3',
-      author: 'Author 3',
-      genre: 'Genre 3',
-      publishDate: '2022-01-03',
-      price: 0,
-    },
-    {
-      id: 4,
-      name: 'Chapter 4',
-      author: 'Author 4',
-      genre: 'Genre 4',
-      publishDate: '2022-01-04',
-      price: 50,
-    },
-    {
-      id: 5,
-      name: 'Chapter 5',
-      author: 'Author 5',
-      genre: 'Genre 5',
-      publishDate: '2022-01-05',
-      price: 0,
-    },
-    {
-      id: 6,
-      name: 'Chapter 6',
-      author: 'Author 6',
-      genre: 'Genre 6',
-      publishDate: '2022-01-06',
-      price: 15,
-    },
-  ];
+    axios.get(`http://localhost:3001/product`).then(function (response) {
+      setProductFamiliar(response.data);
+    });
+  }, []);
   const handleRowClick = row => {
     if (row.price > 0) {
       setChapter({ ...row, productId: params?.id });
       setOpenPopup(true);
     } else {
-      router.push(`/chapters/${row.id}`);
+      router.push(`/products/${params?.id}/chapters/${row.chapterNumber}`);
     }
   };
 
@@ -115,29 +80,6 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  // Dummy product data for demonstration
-  const product = {
-    name: 'Product Name',
-    authorName: 'Author Name',
-    status: 'PROGRESS',
-    viewCount: 4629,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla id aliquam felis. Cras tincidunt purus in lectus condimentum eleifend.',
-    price: {
-      formatted_with_symbol: '$19.99',
-    },
-    image:
-      'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg',
-    rating: 4,
-    createdAt: '01/01/2015',
-    categories: [
-      { name: 'Fiction' },
-      { name: 'Love' },
-      { name: 'Story' },
-      { name: 'Action' },
-    ],
-  };
-
   return (
     <Fragment>
       <Header token={token} />
@@ -147,7 +89,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
             <div className="book-3d relative min-w-[210px] min-h-[300px] md:max-w-[250px]">
               <Image
                 className="object-cover w-full h-full align-middle min-w-[210px] min-h-[300px] md:max-w-[250px]"
-                src={product.image}
+                src={product?.image}
                 height={270}
                 width={180}
                 alt="Product"
@@ -158,23 +100,25 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
               <div className="px-5 pb-0 lg:pt-5 rounded-md">
                 <div className="flex flex-col justify-center items-center">
                   <h1 className="text-3xl font-bold mb-2 text-center">
-                    {product.name}
+                    {product?.name}
                   </h1>
-                  <Rating
-                    name="simple-controlled"
-                    value={product.rating}
-                    size="small"
-                    // onChange={(event, newValue) => {
-                    //   setValue(newValue);
-                    // }}
-                  />
+                  {product?.averageRate && (
+                    <Rating
+                      name="simple-controlled"
+                      value={product.averageRate}
+                      size="small"
+                      // onChange={(event, newValue) => {
+                      //   setValue(newValue);
+                      // }}
+                    />
+                  )}
                   <p className="text-sm">
-                    <b className="font-bold">{product.rating}</b>/5 trên tổng số{' '}
-                    <b className="font-bold">369</b> lượt đánh giá
+                    <b className="font-bold">{product?.averageRate}</b>/5 trên
+                    tổng số <b className="font-bold">369</b> lượt đánh giá
                   </p>
                 </div>
                 {/* <p className="text-2xl text-blue-500 font-bold mb-4">
-                {product.price.formatted_with_symbol}
+                {product?.price.formatted_with_symbol}
               </p>
               <div className="flex gap-4 mb-4">
                 <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out">
@@ -185,30 +129,30 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                   <tbody className="[&>tr>td]:w-[100px] [&>tr>th]:text-left">
                     <tr>
                       <td>Author:</td>
-                      <th>{product.authorName}</th>
+                      <th>{product?.authorName}</th>
                     </tr>
                     <tr>
                       <td>Status:</td>
                       <th>
                         <span
-                          className={`${product.status === Status.DONE ? 'text-green-500' : 'text-yellow-500'}`}
+                          className={`${product?.status === Status.DONE ? 'text-green-500' : 'text-yellow-500'}`}
                         >
-                          {product.status}
+                          {product?.status}
                         </span>
                       </th>
                     </tr>
                     <tr>
                       <td>Published:</td>
-                      <th>{product.createdAt}</th>
+                      <th>{product?.createdAt}</th>
                     </tr>
                     <tr>
                       <td>viewCount:</td>
-                      <th>{product.viewCount}</th>
+                      <th>{product?.viewCount}</th>
                     </tr>
                   </tbody>
                 </table>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {product.categories.map((category, index) => (
+                  {product?.categories?.map((category, index) => (
                     <span
                       key={index}
                       className="bg-gray-200 rounded-full px-2 py-1 text-sm cursor-pointer hover:bg-gray-300"
@@ -217,7 +161,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-700 mt-4">{product.description}</p>
+                <p className="text-gray-700 mt-4">{product?.description}</p>
               </div>
             </div>
           </div>
@@ -230,9 +174,8 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
               <Table aria-label="simple table">
                 <TableHead>
                   <TableRow className="[&>*]:font-bold">
+                    <TableCell>Tập</TableCell>
                     <TableCell>Tên</TableCell>
-                    <TableCell>Tác giả</TableCell>
-                    <TableCell>Phân loại</TableCell>
                     <TableCell>Ngày đăng</TableCell>
                     <TableCell>Giá</TableCell>
                   </TableRow>
@@ -250,12 +193,11 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                       className="cursor-pointer hover:bg-gray-100"
                       onClick={() => handleRowClick(row)}
                     >
+                      <TableCell>{row?.chapterNumber}</TableCell>
                       <TableCell component="th" scope="row">
-                        {row?.name}
+                        {row?.chapterName}
                       </TableCell>
-                      <TableCell>{row?.author}</TableCell>
-                      <TableCell>{row?.genre}</TableCell>
-                      <TableCell>{row?.publishDate}</TableCell>
+                      <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
                       <TableCell
                         className={`${row?.price > 0 ? 'text-red-600' : ''}`}
                       >
@@ -274,7 +216,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                         { label: 'All', value: -1 },
                       ]}
                       //   colSpan={3}
-                      count={50}
+                      count={rows.length}
                       rowsPerPage={rowsPerPage}
                       page={page}
                       slotProps={{
@@ -302,40 +244,25 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
               Truyện liên quan
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map(val => {
+              {productFamiliar.slice(0, 4).map(val => {
                 return (
                   <Link
                     className={`relative group`}
                     key={val}
-                    href={`/products/${val}`}
+                    href={`/products/${val.id}`}
                   >
                     <div className="max-w-full flex flex-col items-center">
                       <div className="flex items-center relative rounded">
-                        {/* <Image
-                          src={
-                            'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg'
-                          }
-                          width={500}
-                          height={500}
-                          alt=""
-                          className="object-contain lg:group-hover:scale-105 transition-all duration-300"
-                          draggable={false}
-                        /> */}
                         <div className="book-3d relative min-w-[180px] min-h-[270px] md:max-w-[250px] lg:group-hover:scale-105 transition-all duration-300">
                           <Image
                             className="object-cover w-full h-full align-middle min-w-[180px] min-h-[270px] md:max-w-[250px]"
-                            src={
-                              'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg'
-                            }
+                            src={val.image}
                             height={270}
                             width={180}
                             alt="Product"
                             draggable={false}
                           />
                         </div>
-                        {/* <div className="text-center text-sm text-white w-[170px] left-[-45px] top-[60px] absolute origin-top-left rotate-[-33.19deg] bg-red-500 shadow-md">
-                          product.status
-                        </div> */}
 
                         <button
                           title="Add to favorite list"
@@ -368,14 +295,14 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
 
                       <div className="mt-3 w-full">
                         <div className="text-black py-2 flex flex-wrap justify-between items-center">
-                          <span>product.name</span>
+                          <span>{val.name}</span>
                           <span className="text-gray-400 text-xs lg:text-sm">
-                            product.rates ★
+                            {val.averageRate} ★
                           </span>
                         </div>
                         <div className="text-gray-400 [&>span]:text-xs lg:[&>span]:text-sm flex flex-wrap justify-between items-center">
-                          <span>product.authorName</span>
-                          <span>product.chapters.length chapters</span>
+                          <span>{val.authorName}</span>
+                          <span>{val.chapterCount} chapters</span>
                         </div>
                       </div>
                     </div>

@@ -105,7 +105,7 @@ const Header = ({ token }: any) => {
                   className="hover:bg-inherit hover:[&>*]:text-black"
                 >
                   <Typography variant="body2" color="text.primary">
-                    My Product
+                    My Products
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -114,7 +114,16 @@ const Header = ({ token }: any) => {
                   className="hover:bg-inherit hover:[&>*]:text-black"
                 >
                   <Typography variant="body2" color="text.primary">
-                    Category Management
+                    Categories Management
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => router.push('/chapters-management')}
+                  sx={{ py: '6px', px: '12px' }}
+                  className="hover:bg-inherit hover:[&>*]:text-black"
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Chapters Management
                   </Typography>
                 </MenuItem>
               </Box>

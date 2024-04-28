@@ -25,9 +25,12 @@ function Completion(): JSX.Element {
         await stripe.retrievePaymentIntent(clientSecret);
 
       if (paymentIntent) {
-        axios.post('http://localhost:3001/paymentConfirm', {
+        axios.post('http://localhost:3001/payment', {
+          userId: JSON.parse(localStorage.getItem('authToken') || '').id,
           amount: paymentIntent?.amount,
-          chapterId: JSON.parse(paymentIntent?.description || '').chapterId,
+          chapters: [
+            { id: JSON.parse(paymentIntent?.description || '').chapterId },
+          ],
         });
         setProductId(JSON.parse(paymentIntent?.description || '').productId);
       }

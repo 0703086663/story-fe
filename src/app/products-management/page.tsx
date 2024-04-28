@@ -1,6 +1,7 @@
 'use client';
 import {
   Button,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -20,16 +22,13 @@ import AddIcon from '@mui/icons-material/Add';
 import CreateForm from './create';
 import axios from 'axios';
 import { formatDatetime } from '@/utils/format';
-import Image from 'next/image';
 
-// TODO: Create manually & AI
-// Chon categories (multi select) || tao category (neu ko ton tai)
 export default function Products({ params }: { params: { slug: string } }) {
-  const router = useRouter();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openPopup, setOpenPopup] = useState(false);
   const [rows, setRows] = useState<any>([]);
+  const [refresh, setRefresh] = React.useState(false);
 
   const [token, setToken] = React.useState('');
 
@@ -37,8 +36,9 @@ export default function Products({ params }: { params: { slug: string } }) {
     setToken(localStorage.getItem('authToken') || '');
     axios.get('http://localhost:3001/product').then(function (response) {
       setRows(response.data);
+      setRefresh(false);
     });
-  }, []);
+  }, [refresh]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -85,6 +85,7 @@ export default function Products({ params }: { params: { slug: string } }) {
                   <TableCell>Public Date</TableCell>
                   <TableCell>Views number</TableCell>
                   <TableCell>Image</TableCell>
+                  <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -100,11 +101,27 @@ export default function Products({ params }: { params: { slug: string } }) {
                       {row?.name}
                     </TableCell>
                     <TableCell>{row?.authorName}</TableCell>
-                    <TableCell>{row?.description}</TableCell>
+                    <TableCell>
+                      {row?.description.length > 50
+                        ? `${row?.description.slice(0, 50)} ...`
+                        : row?.description}
+                    </TableCell>
                     <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
                     <TableCell>{row?.viewCount}</TableCell>
                     <TableCell>
                       <img src={row.image} height={100} width={300} alt="" />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onClick={() => {
+                          axios.delete(
+                            `http://localhost:3001/product/${row.id}`,
+                          );
+                          setRefresh(true);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -143,6 +160,7 @@ export default function Products({ params }: { params: { slug: string } }) {
         open={openPopup}
         handleClose={handleClosePopup}
         token={token}
+        setRefresh={setRefresh}
       />
     </>
   );

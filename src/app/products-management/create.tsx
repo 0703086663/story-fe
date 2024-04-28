@@ -5,6 +5,9 @@ import {
   Box,
   Button,
   Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -12,17 +15,23 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Typography,
 } from '@mui/material';
 import axios from 'axios';
 import React, { Fragment, useEffect } from 'react';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-export default function CreateForm({ open, handleClose, token }: any) {
+export default function CreateForm({
+  open,
+  handleClose,
+  token,
+  setRefresh,
+}: any) {
   const [selectedValue, setSelectedValue] = React.useState('clone');
   const [crawlUrl, setCrawlUrl] = React.useState('from-truyenhd');
   const [categories, setCategories] = React.useState([]);
   const [categoryValue, setCategoryValue] = React.useState<number>();
-  const [img, setImg] = React.useState('');
+  const [crawled, setCrawled] = React.useState<any>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedValue(event.target.value);
@@ -35,255 +44,387 @@ export default function CreateForm({ open, handleClose, token }: any) {
   const handleSubmit = async event => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    if (selectedValue === 'clone') {
+      if (!crawled) {
+        axios
+          .post(`http://localhost:3001/crawler/${crawlUrl}`, {
+            uri: data.get('link'),
+          })
+          .then(function (response) {
+            setCrawled(response.data.data);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        axios
+          .post('http://localhost:3001/product', {
+            categories: categoryValue,
+            name: data.get('name'),
+            source: 'clone',
+            image: data.get('image'),
+            description: data.get('description'),
+            authorName: data.get('authorName'),
+            userId: JSON.parse(token).id,
+            status: 'PROGRESS',
+          })
+          .then(function (response) {
+            for (let i = 0; i <= crawled.chapters.length; i++) {
+              axios
+                .post('http://localhost:3001/chapter', {
+                  productId: response.data.id,
+                  chapterName: data.get(
+                    `chapterName${crawled.chapters[i].chapterNumber}`,
+                  ),
+                  content: data.get(
+                    `content${crawled.chapters[i].chapterNumber}`,
+                  ),
+                  chapterNumber: data.get(
+                    `chapterNumber${crawled.chapters[i].chapterNumber}`,
+                  ),
+                })
+                .then(function (response) {
+                  setRefresh(true);
+                })
+                .catch(function (error) {});
+            }
+          })
+          .catch(function (error) {
+            alert(error);
+          });
+      }
+    } else {
+      axios
+        .post('http://localhost:3001/product', {
+          categories: categoryValue,
+          name: data.get('name'),
+          source: data.get('source'),
+          image: data.get('image'),
+          description: data.get('description'),
+          authorName: data.get('authorName'),
+          userId: JSON.parse(token).id,
+          status: 'PROGRESS',
+        })
+        .then(function (response) {
+          handleClose();
+          setRefresh(true);
+        })
+        .catch(function (error) {
+          alert(error);
+        });
+    }
 
-    axios
-      .post('http://localhost:3001/product', {
-        categories: [{ id: categoryValue }],
-        name: data.get('name'),
-        source: data.get('source'),
-        image: data.get('image'),
-        description: data.get('description'),
-        authorName: data.get('authorName'),
-        userId: JSON.parse(token).id,
-        status: 'PROGRESS',
-      })
-      .then(function (response) {
-        handleClose();
-        // setRefresh(true);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    setCrawled(null);
   };
 
   React.useLayoutEffect(() => {
     axios.get('http://localhost:3001/category').then(function (response) {
       setCategories(response.data);
-      // setRefresh(false);
     });
-  }, []);
-
-  useEffect(() => {
-    setImg('');
   }, []);
 
   return (
     <Dialog
       sx={{
-        '& .MuiDialog-paper': { width: '80%', padding: 5 },
+        '& .MuiDialog-paper': { width: '80%', padding: 3 },
       }}
       maxWidth="md"
+      scroll={'paper'}
       open={open}
       onClose={handleClose}
     >
-      <FormControl>
-        <FormLabel id="demo-row-radio-buttons-group-label">Types</FormLabel>
-        <RadioGroup
-          row
-          aria-labelledby="demo-row-radio-buttons-group-label"
-          name="row-radio-buttons-group"
-        >
-          <FormControlLabel
-            control={
-              <Radio
-                checked={selectedValue === 'clone'}
-                onChange={handleChange}
-                value="clone"
+      <Box
+        component="form"
+        defaultValue={crawled}
+        onSubmit={handleSubmit}
+        noValidate
+        // sx={{ mt: 1 }}
+      >
+        <DialogContent>
+          <FormControl fullWidth>
+            <FormLabel id="demo-row-radio-buttons-group-label">Types</FormLabel>
+            <RadioGroup
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+            >
+              <FormControlLabel
+                control={
+                  <Radio
+                    checked={selectedValue === 'clone'}
+                    onChange={handleChange}
+                    value="clone"
+                  />
+                }
+                label="Clone"
               />
-            }
-            label="Clone"
-          />
-          <FormControlLabel
-            control={
-              <Radio
-                checked={selectedValue === 'new'}
-                onChange={handleChange}
-                value="new"
+              <FormControlLabel
+                control={
+                  <Radio
+                    checked={selectedValue === 'new'}
+                    onChange={handleChange}
+                    value="new"
+                  />
+                }
+                label="New"
               />
-            }
-            label="New"
-          />
-        </RadioGroup>
-      </FormControl>
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        {selectedValue === 'clone' ? (
-          <Fragment>
-            <FormControl>
-              <FormLabel id="demo-row-radio-buttons-group-label">
-                Crawl Type
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-              >
-                <FormControlLabel
-                  control={
-                    <Radio
-                      checked={crawlUrl === 'from-truyenhd'}
-                      onChange={handleChangeCrawl}
-                      value="from-truyenhd"
-                    />
-                  }
-                  label="truyenhd"
-                />
-                <FormControlLabel
-                  control={
-                    <Radio
-                      checked={crawlUrl === 'from-truyenfull'}
-                      onChange={handleChangeCrawl}
-                      value="from-truyenfull"
-                    />
-                  }
-                  label="truyenfull"
-                />
-                <FormControlLabel
-                  control={
-                    <Radio
-                      checked={crawlUrl === 'from-china'}
-                      onChange={handleChangeCrawl}
-                      value="from-china"
-                    />
-                  }
-                  label="jjwxc"
-                />
-              </RadioGroup>
-            </FormControl>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="link"
-              label="A link which you want to crawl"
-              name="crawl"
-              autoFocus
-            />
-          </Fragment>
-        ) : (
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={12}>
+            </RadioGroup>
+          </FormControl>
+          {selectedValue === 'clone' ? (
+            <Fragment>
+              <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">
+                  Crawl Type
+                </FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                >
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={crawlUrl === 'from-truyenhd'}
+                        onChange={handleChangeCrawl}
+                        value="from-truyenhd"
+                      />
+                    }
+                    label="truyenhd"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={crawlUrl === 'from-truyenfull'}
+                        onChange={handleChangeCrawl}
+                        value="from-truyenfull"
+                      />
+                    }
+                    label="truyenfull"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={crawlUrl === 'from-china'}
+                        onChange={handleChangeCrawl}
+                        value="from-china"
+                      />
+                    }
+                    label="jjwxc"
+                  />
+                </RadioGroup>
+              </FormControl>
               <TextField
-                margin="normal"
                 required
                 fullWidth
-                id="name"
-                label="Name"
-                name="name"
-                autoComplete="name"
+                id="link"
+                label="A link which you want to crawl"
+                name="link"
                 autoFocus
               />
+              {crawled && (
+                <Grid className="mt-1" container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      required
+                      id="name"
+                      label="Name"
+                      fullWidth
+                      name="name"
+                      defaultValue={crawled?.name || null}
+                      autoComplete="name"
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Autocomplete
+                      disablePortal
+                      id="categories"
+                      fullWidth
+                      multiple
+                      options={categories}
+                      getOptionLabel={option => option.name}
+                      renderInput={params => (
+                        <TextField
+                          {...params}
+                          label="Categories"
+                          id="id"
+                          required
+                        />
+                      )}
+                      onChange={(e, val) =>
+                        setCategoryValue(val.map(v => ({ id: v.id })))
+                      }
+                      renderOption={(props, option) => (
+                        <div {...props}>
+                          <h3>{option?.name}</h3>
+                        </div>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      required
+                      id="description"
+                      label="Description"
+                      defaultValue={crawled?.description || null}
+                      fullWidth
+                      name="description"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="authorName"
+                      defaultValue={crawled?.author || null}
+                      label="Author Name"
+                      name="authorName"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      required
+                      id="image"
+                      fullWidth
+                      value={crawled?.image || null}
+                      label="Image"
+                      placeholder="Put the image`s link from gg to display for product"
+                      name="image"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={12}>
+                    <Typography variant="h5">Chapters</Typography>
+                  </Grid>
+                  {crawled?.chapters.map(v => {
+                    return (
+                      <Grid container spacing={2} className="m-2">
+                        <div className="w-[100%]">
+                          <Divider />
+                        </div>
+                        <Grid item xs={12} md={6}>
+                          <TextField
+                            required
+                            type="number"
+                            fullWidth
+                            id="chapterNumber"
+                            defaultValue={v?.chapterNumber || null}
+                            label="Chapter Number"
+                            name={`chapterNumber${v?.chapterNumber}`}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <TextField
+                            required
+                            fullWidth
+                            id="chapterName"
+                            defaultValue={v?.chapterName || null}
+                            label="Chapter Name"
+                            name={`chapterName${v?.chapterNumber}`}
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={12}>
+                          <TextField
+                            required
+                            fullWidth
+                            multiline
+                            rows={4}
+                            id="content"
+                            defaultValue={v?.content || null}
+                            label="Content"
+                            name={`content${v?.chapterNumber}`}
+                          />
+                        </Grid>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              )}
+            </Fragment>
+          ) : (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  required
+                  id="name"
+                  label="Name"
+                  fullWidth
+                  name="name"
+                  autoComplete="name"
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  disablePortal
+                  id="categories"
+                  fullWidth
+                  multiple
+                  options={categories}
+                  getOptionLabel={option => option.name}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Categories"
+                      id="id"
+                      required
+                    />
+                  )}
+                  onChange={(e, val) =>
+                    setCategoryValue(val.map(v => ({ id: v.id })))
+                  }
+                  renderOption={(props, option) => (
+                    <div {...props}>
+                      <h3>{option?.name}</h3>
+                    </div>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  required
+                  id="source"
+                  label="Source"
+                  fullWidth
+                  name="source"
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  required
+                  id="description"
+                  label="Description"
+                  fullWidth
+                  name="description"
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="authorName"
+                  label="Author Name"
+                  name="authorName"
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  required
+                  id="image"
+                  fullWidth
+                  label="Image"
+                  placeholder="Put the image`s link from gg to display for product"
+                  name="image"
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={6} md={12}>
-              <Autocomplete
-                disablePortal
-                id="categories"
-                options={categories}
-                getOptionLabel={option => option.name}
-                sx={{ width: 300 }}
-                renderInput={params => (
-                  <TextField {...params} label="Categories" id="id" />
-                )}
-                onChange={(e, v) => setCategoryValue(v?.id)}
-                renderOption={(props, option) => (
-                  <div {...props}>
-                    <h3>{option?.name}</h3>
-                  </div>
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} spacing={2}>
-              <TextField
-                margin="normal"
-                sx={{ width: 300 }}
-                required
-                fullWidth
-                id="source"
-                label="Source"
-                name="source"
-              />
-              {/* </Grid>
-            <Grid item xs={6} md={12}> */}
-              <TextField
-                margin="normal"
-                sx={{ width: 300 }}
-                fullWidth
-                required
-                id="description"
-                label="Description"
-                name="description"
-              />
-              <TextField
-                margin="normal"
-                sx={{ width: 300 }}
-                required
-                fullWidth
-                id="authorName"
-                label="Author Name"
-                name="authorName"
-              />
-            </Grid>
-            <Grid>
-              <div className="flex flex-col items-center ">
-                <Button
-                  component="label"
-                  variant="contained"
-                  onChange={(event: any) => {
-                    const file = event.target.files[0];
-                    const object = URL.createObjectURL(file);
-                    setImg(object);
-                    // formik.setFieldValue('image', file || {});
-                  }}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload file
-                  <input hidden type="file" name="image" id="image" />
-                </Button>
-                {/*eslint-disable-next-line @next/next/no-img-element*/}
-                {img && (
-                  <img
-                    src={
-                      img
-                      // preview ||
-                      // (!_.isEmpty(formik.getFieldMeta('image').value) &&
-                      //   formik.getFieldMeta('image').value) ||
-                      // '/noImage.jpg'
-                    }
-                    alt=""
-                    className=" m-2 w-full h-full object-contain mt-2 max-h-[290px]"
-                  />
-                )}
-              </div>
-            </Grid>
-          </Grid>
-        )}
-        <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }}>
-          Submit
-        </Button>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button type="submit" variant="contained">
+            Submit
+          </Button>
+        </DialogActions>
       </Box>
-
-      {/* <form
-        id="payment-form"
-        onSubmit={handleSubmit}
-        className="flex flex-col "
-      >
-        <PaymentElement id="payment-element" />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isLoading || !stripe || !elements}
-          className="mt-3"
-        >
-          <span id="button-text">
-            {isLoading ? (
-              <div className="spinner" id="spinner"></div>
-            ) : (
-              'Pay now'
-            )}
-          </span>
-        </Button>
-        {message && <div id="payment-message">{message}</div>}
-      </form> */}
     </Dialog>
   );
 }

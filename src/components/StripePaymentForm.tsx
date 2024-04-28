@@ -18,7 +18,7 @@ const StripePaymentForm = ({ open, handleClose, chapter }: any) => {
     if (chapter?.id) {
       axios
         .post('http://localhost:3001/payment/createIntent', {
-          amount: chapter?.price,
+          amount: Math.round(chapter?.price),
           description: JSON.stringify({
             chapterId: chapter?.id,
             productId: chapter?.productId,

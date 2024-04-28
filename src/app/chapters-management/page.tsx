@@ -28,6 +28,7 @@ import Header from '@/components/Header/Header';
 import AddIcon from '@mui/icons-material/Add';
 import CreateForm from './create';
 import axios from 'axios';
+import { formatDatetime } from '@/utils/format';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function Categories({ params }: { params: { slug: string } }) {
@@ -36,14 +37,19 @@ export default function Categories({ params }: { params: { slug: string } }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openPopup, setOpenPopup] = useState(false);
   const [rows, setRows] = useState<any>([]);
+  const [products, setProducts] = useState<any>([]);
 
   const [token, setToken] = React.useState('');
   const [refresh, setRefresh] = React.useState(false);
 
   React.useLayoutEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
-    axios.get('http://localhost:3001/category').then(function (response) {
+    axios.get('http://localhost:3001/chapter').then(function (response) {
       setRows(response.data);
+      setRefresh(false);
+    });
+    axios.get('http://localhost:3001/product').then(function (response) {
+      setProducts(response.data);
       setRefresh(false);
     });
   }, [refresh]);
@@ -72,7 +78,7 @@ export default function Categories({ params }: { params: { slug: string } }) {
         <div className="w-full lg:max-w-[1200px] lg:px-6 flex flex-col justify-center">
           <TableContainer sx={{ boxShadow: 'none' }} component={Paper}>
             <div className="flex justify-between">
-              <Typography variant="h6">Categories Management</Typography>
+              <Typography variant="h6">Chapters Management</Typography>
               <Button
                 color="primary"
                 variant="contained"
@@ -87,8 +93,12 @@ export default function Categories({ params }: { params: { slug: string } }) {
             <Table aria-label="simple table">
               <TableHead>
                 <TableRow className="[&>*]:font-bold">
-                  <TableCell>Name</TableCell>
-                  <TableCell>Description</TableCell>
+                  <TableCell>Product Name</TableCell>
+                  <TableCell>Chapter Name</TableCell>
+                  <TableCell>Content</TableCell>
+                  <TableCell>Chapter Number</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Created At</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -102,14 +112,18 @@ export default function Categories({ params }: { params: { slug: string } }) {
                 ).map((row, index) => (
                   <TableRow key={index}>
                     <TableCell component="th" scope="row">
-                      {row?.name}
+                      {products?.find(v => v?.id === row?.productId).name}
                     </TableCell>
-                    <TableCell>{row?.description}</TableCell>
+                    <TableCell>{row?.chapterName}</TableCell>
+                    <TableCell>{row?.content.slice(0, 50)}...</TableCell>
+                    <TableCell>{row?.chapterNumber}</TableCell>
+                    <TableCell>{row?.price}</TableCell>
+                    <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
                     <TableCell>
                       <IconButton
                         onClick={() => {
                           axios.delete(
-                            `http://localhost:3001/category/${row.id}`,
+                            `http://localhost:3001/chapter/${row.id}`,
                           );
                           setRefresh(true);
                         }}
@@ -154,6 +168,7 @@ export default function Categories({ params }: { params: { slug: string } }) {
         open={openPopup}
         handleClose={handleClosePopup}
         setRefresh={setRefresh}
+        products={products}
       />
     </>
   );
