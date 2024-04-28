@@ -104,7 +104,7 @@ export default function Products({ params }: { params: { slug: string } }) {
                     <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
                     <TableCell>{row?.viewCount}</TableCell>
                     <TableCell>
-                      <Image src={row.image} height={100} width={300} alt="" />
+                      <img src={row.image} height={100} width={300} alt="" />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -118,7 +118,7 @@ export default function Products({ params }: { params: { slug: string } }) {
                       25,
                       { label: 'All', value: -1 },
                     ]}
-                    count={50}
+                    count={rows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     slotProps={{
@@ -139,7 +139,11 @@ export default function Products({ params }: { params: { slug: string } }) {
           </TableContainer>
         </div>
       </main>
-      <CreateForm open={openPopup} handleClose={handleClosePopup} />
+      <CreateForm
+        open={openPopup}
+        handleClose={handleClosePopup}
+        token={token}
+      />
     </>
   );
 }
