@@ -131,3 +131,38 @@ table {
 
 @layer utilities {
 }
+
+.book-3d {
+  position: relative;
+  width: 180px;
+  text-align: center;
+  margin: auto;
+  -moz-perspective: 300px;
+  -moz-transform: rotateY(-3deg);
+  -webkit-transform: perspective(300) rotateY(-3deg);
+  box-shadow: 5px 5px 20px #333;
+  display: inline-block;
+}
+.book-3d:before {
+  position: absolute;
+  top: 2%;
+  height: 96%;
+  content: ' ';
+  z-index: -1;
+  width: 100%;
+  left: 7.5%;
+  background-color: #000;
+}
+.book-3d:after {
+  width: 5%;
+  left: 100%;
+  background-color: #efefef;
+  box-shadow: inset 0 0 5px #aaa;
+  -moz-transform: rotateY(20deg);
+  -webkit-transform: perspective(300) rotateY(20deg);
+  position: absolute;
+  top: 2%;
+  height: 96%;
+  content: ' ';
+  z-index: -1;
+}

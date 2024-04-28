@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,24 +16,40 @@ import Container from '@mui/material/Container';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-// TODO: Validate form
-const register = () => {
+const Register = () => {
   const router = useRouter();
+  const [submit, setSubmit] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [checked, setChecked] = useState(false);
+  const [errorText, setErrorText] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    setSubmit(true);
+
+    if (!firstName || !lastName || !email || !password) {
+      return;
+    }
+
+    if (checked === false) {
+      setErrorText('Please accept the terms and conditions');
+      return;
+    }
+
     axios
       .post('http://localhost:3001/auth/signup', {
-        name: data.get('lastName') + ' ' + data.get('firstName'),
-        email: data.get('email'),
-        password: data.get('password'),
+        name: lastName + ' ' + firstName,
+        email,
+        password,
       })
       .then(function (response) {
         router.push('/login');
       })
       .catch(function (error) {
-        console.log(error);
+        setErrorText(error.response.data.message);
       });
   };
 
@@ -69,6 +85,13 @@ const register = () => {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                onChange={e => {
+                  setFirstName(e.target.value);
+                }}
+                error={submit && !firstName}
+                helperText={
+                  submit && !firstName ? 'This field is required' : ''
+                }
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -79,6 +102,11 @@ const register = () => {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
+                onChange={e => {
+                  setLastName(e.target.value);
+                }}
+                error={submit && !lastName}
+                helperText={submit && !lastName ? 'This field is required' : ''}
               />
             </Grid>
             <Grid item xs={12}>
@@ -89,6 +117,11 @@ const register = () => {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={e => {
+                  setEmail(e.target.value);
+                }}
+                error={submit && !email}
+                helperText={submit && !email ? 'This field is required' : ''}
               />
             </Grid>
             <Grid item xs={12}>
@@ -100,15 +133,33 @@ const register = () => {
                 type="password"
                 id="password"
                 autoComplete="new-password"
+                onChange={e => {
+                  setPassword(e.target.value);
+                }}
+                error={submit && !password}
+                helperText={submit && !password ? 'This field is required' : ''}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                control={
+                  <Checkbox
+                    value={checked}
+                    onChange={e => {
+                      setChecked(!checked);
+                    }}
+                    color="primary"
+                  />
+                }
                 label="I accept the terms and conditions"
               />
             </Grid>
           </Grid>
+          <span
+            className={`text-[#d32f2f] ${errorText && submit ? 'block' : 'hidden'}`}
+          >
+            {errorText}
+          </span>
           <Button
             type="submit"
             fullWidth
@@ -130,4 +181,4 @@ const register = () => {
   );
 };
 
-export default register;
+export default Register;

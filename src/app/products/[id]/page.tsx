@@ -126,7 +126,8 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
     price: {
       formatted_with_symbol: '$19.99',
     },
-    image: 'https://i.ytimg.com/vi/lBTlcjrCcVQ/maxresdefault.jpg',
+    image:
+      'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg',
     rating: 4,
     createdAt: '01/01/2015',
     categories: [
@@ -143,13 +144,14 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
       <main className="relative mt-28 px-[30px] flex justify-center">
         <div className="w-full lg:max-w-[1200px] lg:px-6">
           <div className="flex flex-col md:flex-row gap-8">
-            <div className="relative w-full md:max-w-[250px] rounded shadow-md">
+            <div className="book-3d relative min-w-[210px] min-h-[300px] md:max-w-[250px]">
               <Image
-                className="object-cover w-full h-full rounded"
+                className="object-cover w-full h-full align-middle min-w-[210px] min-h-[300px] md:max-w-[250px]"
                 src={product.image}
-                height={500}
-                width={500}
+                height={270}
+                width={180}
                 alt="Product"
+                draggable={false}
               />
             </div>
             <div className="md:w-full">
@@ -299,7 +301,7 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
             >
               Truyện liên quan
             </Typography>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map(val => {
                 return (
                   <Link
@@ -307,28 +309,39 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                     key={val}
                     href={`/products/${val}`}
                   >
-                    <div className="max-w-full">
-                      <div className="flex items-center relative rounded overflow-hidden shadow">
-                        <Image
+                    <div className="max-w-full flex flex-col items-center">
+                      <div className="flex items-center relative rounded">
+                        {/* <Image
                           src={
-                            'https://i.ytimg.com/vi/lBTlcjrCcVQ/maxresdefault.jpg'
+                            'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg'
                           }
                           width={500}
                           height={500}
                           alt=""
-                          className="object-contain group-hover:scale-110 transition-all duration-300"
+                          className="object-contain lg:group-hover:scale-105 transition-all duration-300"
                           draggable={false}
-                        />
-
-                        <div className="text-center text-sm text-white w-[170px] left-[-45px] top-[60px] absolute origin-top-left rotate-[-33.19deg] bg-red-500 shadow-md">
-                          product.status
+                        /> */}
+                        <div className="book-3d relative min-w-[180px] min-h-[270px] md:max-w-[250px] lg:group-hover:scale-105 transition-all duration-300">
+                          <Image
+                            className="object-cover w-full h-full align-middle min-w-[180px] min-h-[270px] md:max-w-[250px]"
+                            src={
+                              'https://truyenhdx.com/wp-content/uploads/2024/03/me-ke-hao-phong-rai-tien-truc-tuyen-1710257610.jpg'
+                            }
+                            height={270}
+                            width={180}
+                            alt="Product"
+                            draggable={false}
+                          />
                         </div>
+                        {/* <div className="text-center text-sm text-white w-[170px] left-[-45px] top-[60px] absolute origin-top-left rotate-[-33.19deg] bg-red-500 shadow-md">
+                          product.status
+                        </div> */}
 
                         <button
                           title="Add to favorite list"
                           type="button"
                           data-id="1"
-                          className="btn-add-to-favorite text-xl transition-all duration-300 appearance-none text-[#333333] bg-transparent absolute top-2 right-2 z-[3]"
+                          className="btn-add-to-favorite text-xl transition-all duration-300 appearance-none text-[#333333] bg-transparent absolute top-2 right-0 z-[3]"
                         >
                           <svg
                             width="1em"
@@ -352,15 +365,18 @@ export default function StoryDetails({ params }: { params: { slug: string } }) {
                           </svg>
                         </button>
                       </div>
-                      <div className="text-black py-2 flex justify-between items-center">
-                        <span>product.name</span>
-                        <span className="text-gray-400 text-xs lg:text-sm">
-                          product.chapters.length chapters
-                        </span>
-                      </div>
-                      <div className="text-gray-400 [&>span]:text-xs lg:[&>span]:text-sm font-normal leading-[18.20px] select-none flex justify-between items-center">
-                        <span>product.authorName</span>
-                        <span>product.rates ★</span>
+
+                      <div className="mt-3 w-full">
+                        <div className="text-black py-2 flex flex-wrap justify-between items-center">
+                          <span>product.name</span>
+                          <span className="text-gray-400 text-xs lg:text-sm">
+                            product.rates ★
+                          </span>
+                        </div>
+                        <div className="text-gray-400 [&>span]:text-xs lg:[&>span]:text-sm flex flex-wrap justify-between items-center">
+                          <span>product.authorName</span>
+                          <span>product.chapters.length chapters</span>
+                        </div>
                       </div>
                     </div>
                   </Link>
