@@ -198,8 +198,9 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
                         {row?.chapterName}
                       </TableCell>
                       <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
+                      {/* // TODO */}
                       <TableCell
-                        className={`${row?.price > 0 ? 'text-red-600' : ''}`}
+                        className={`${row?.price > 0 && !row.users.find(v => localStorage.getItem('authToken' || '').id === v) ? 'text-red-600' : ''}`}
                       >
                         {row?.price > 0 ? row?.price : ''}
                       </TableCell>
