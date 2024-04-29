@@ -42,7 +42,11 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
   React.useLayoutEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
     axios.get(`http://localhost:3001/chapter`).then(function (response) {
-      setRows(response.data.filter(v => v.productId == params.id));
+      setRows(
+        response.data
+          .filter(v => v.productId == params.id)
+          .sort((a, b) => a.chapterNumber - b.chapterNumber),
+      );
     });
     axios
       .get(`http://localhost:3001/product/${params.id}`)
@@ -55,9 +59,13 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
     });
   }, []);
 
-
   const handleRowClick = row => {
-    if (row.price > 0 && !row.users.includes(JSON.parse(localStorage.getItem('authToken' || ''))?.id)) {
+    if (
+      row.price > 0 &&
+      !row.users.includes(
+        JSON.parse(localStorage.getItem('authToken' || ''))?.id,
+      )
+    ) {
       setChapter({ ...row, productId: params?.id });
       setOpenPopup(true);
     } else {
