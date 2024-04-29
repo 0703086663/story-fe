@@ -2,6 +2,7 @@
 import { Box, Button, Container, Link, Typography } from '@mui/material';
 import { loadStripe, Stripe, PaymentIntent } from '@stripe/stripe-js';
 import axios from 'axios';
+import React from 'react';
 import { useEffect, useState } from 'react';
 
 const stripePromise = loadStripe(
@@ -11,31 +12,40 @@ const stripePromise = loadStripe(
 function Completion(): JSX.Element {
   const [productId, setProductId] = useState<string | undefined>();
 
+  const [paymentIntentFetched, setPaymentIntentFetched] = useState(false);
   useEffect(() => {
-    if (!stripePromise) return;
+    let isMounted = true;
 
-    stripePromise.then(async (stripe: Stripe | null) => {
-      if (!stripe) return;
+    const fetchPaymentIntent = async () => {
+      if (!stripePromise || paymentIntentFetched) return;
 
+      const stripe = await stripePromise;
       const url = new URL(window.location.href);
       const clientSecret = url.searchParams.get('payment_intent_client_secret');
-      if (!clientSecret) return;
 
-      const { paymentIntent }: { paymentIntent?: PaymentIntent } =
-        await stripe.retrievePaymentIntent(clientSecret);
+      if (!clientSecret || !stripe || !isMounted) return;
 
-      if (paymentIntent) {
+      const { paymentIntent }: { paymentIntent?: PaymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+
+      if (paymentIntent && isMounted) {
         axios.post('http://localhost:3001/payment', {
           userId: JSON.parse(localStorage.getItem('authToken') || '').id,
           amount: paymentIntent?.amount,
-          chapters: [
-            { id: JSON.parse(paymentIntent?.description || '').chapterId },
-          ],
+          chapters: [{ id: JSON.parse(paymentIntent?.description || '').chapterId }],
         });
+
         setProductId(JSON.parse(paymentIntent?.description || '').productId);
+        setPaymentIntentFetched(true);
       }
-    });
-  }, []);
+    };
+
+    fetchPaymentIntent();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [paymentIntentFetched]);
+
 
   return (
     <>

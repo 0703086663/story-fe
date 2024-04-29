@@ -24,13 +24,50 @@ export default function Home() {
   const router = useRouter();
   const [token, setToken] = React.useState('');
   const [rows, setRows] = useState<any>([]);
+  const [favs, setFavs] = useState<any>([]);
 
   React.useLayoutEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
     axios.get('http://localhost:3001/product').then(function (response) {
       setRows(response.data);
     });
+
+    if (token) {
+      fetchFavs();
+    }
   }, []);
+
+  const fetchFavs = () => {
+    axios
+      .get('http://localhost:3001/list', {
+        params: {
+          userId: JSON.parse(token).id,
+          classification: 'FAVORITE',
+        },
+      })
+      .then(function (response) {
+        setFavs(response.data);
+      });
+  };
+
+  const addFavorite = (e, id) => {
+    e.stopPropagation();
+    axios
+      .patch('http://localhost:3001/list', {
+        userId: JSON.parse(token).id,
+        classification: 'FAVORITE',
+        products: [
+          {
+            id,
+          },
+        ],
+      })
+      .then(() => {
+        fetchFavs();
+      });
+  };
+
+  console.log(favs);
 
   return (
     <>
@@ -41,17 +78,19 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {rows.slice(0, 8).map((val: any) => {
                 return (
-                  <Link
-                    className={`relative group`}
+                  <div
+                    className={`relative group cursor-pointer`}
                     key={val.id}
-                    href={`/products/${val?.id}`}
+                    onClick={() => {
+                      router.push(`/products/${val?.id}`);
+                    }}
                   >
                     <div className="max-w-full flex flex-col items-center">
                       <div className="flex items-center relative rounded">
                         <div className="book-3d relative min-w-[180px] min-h-[270px] md:max-w-[250px] lg:group-hover:scale-105 transition-all duration-300">
-                          <img
+                          <Image
                             className="object-cover w-full h-full align-middle min-w-[180px] min-h-[270px] md:max-w-[250px]"
-                            src={val?.image}
+                            src={val?.image || ''}
                             height={270}
                             width={180}
                             alt="Product"
@@ -61,14 +100,15 @@ export default function Home() {
                           title="Add to favorite list"
                           type="button"
                           data-id="1"
-                          className="btn-add-to-favorite text-xl transition-all duration-300 appearance-none text-[#333333] bg-transparent absolute top-2 right-0 z-[3]"
+                          onClick={e => addFavorite(e, val.id)}
+                          className="btn-add-to-favorite text-xl transition-all duration-300 appearance-none text-[#333333] bg-transparent absolute top-2 right-0 z-[100]"
                         >
                           <svg
                             width="1em"
                             height="1em"
                             viewBox="0 -1 14 19"
                             fill="none"
-                            className="transition-all duration-300 hover:scale-125 hover:fill-red-500"
+                            className={`transition-all duration-300 hover:scale-125 ${favs[0]?.products.map(v => v.id).includes(val.id) && 'fill-red-500'} hover:fill-red-500`}
                           >
                             <g stroke="none" strokeWidth="1" fillRule="evenodd">
                               <g
@@ -99,7 +139,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>
@@ -114,21 +154,18 @@ export default function Home() {
                   Truyện yêu thích
                 </h2>
                 <ul className="">
-                  {rows
-                    .sort((a, b) => b.avageRate - a.avageRate)
-                    .slice(0, 8)
-                    .map((row, idx) => {
-                      return (
-                        <li key={idx} className="py-1">
-                          <Link
-                            href="#"
-                            className="text-gray-500 hover:text-black"
-                          >
-                            {row.name}
-                          </Link>
-                        </li>
-                      );
-                    })}
+                  {favs[0]?.products.map((row, idx) => {
+                    return (
+                      <li key={idx} className="py-1">
+                        <Link
+                          href={`/products/${row.id}`}
+                          className="text-gray-500 hover:text-black"
+                        >
+                          {row.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>

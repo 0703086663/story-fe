@@ -54,8 +54,10 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
       setProductFamiliar(response.data);
     });
   }, []);
+
+
   const handleRowClick = row => {
-    if (row.price > 0) {
+    if (row.price > 0 && !row.users.includes(JSON.parse(localStorage.getItem('authToken' || ''))?.id)) {
       setChapter({ ...row, productId: params?.id });
       setOpenPopup(true);
     } else {
@@ -67,6 +69,7 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
     setOpenPopup(false);
   };
 
+  console.log(rows);
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
@@ -80,6 +83,7 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
   return (
     <Fragment>
       <Header token={token} />
@@ -198,9 +202,8 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
                         {row?.chapterName}
                       </TableCell>
                       <TableCell>{formatDatetime(row?.createdAt)}</TableCell>
-                      {/* // TODO */}
                       <TableCell
-                        className={`${row?.price > 0 && !row.users.find(v => localStorage.getItem('authToken' || '').id === v) ? 'text-red-600' : ''}`}
+                        className={`${row?.price > 0 && !row.users.includes(JSON.parse(localStorage.getItem('authToken' || ''))?.id) ? 'text-red-600' : ''}`}
                       >
                         {row?.price > 0 ? row?.price : ''}
                       </TableCell>
@@ -245,11 +248,11 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
               Truyện liên quan
             </Typography>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {productFamiliar.slice(0, 4).map(val => {
+              {productFamiliar.slice(0, 4).map((val: any, index: number) => {
                 return (
                   <Link
                     className={`relative group`}
-                    key={val}
+                    key={index}
                     href={`/products/${val.id}`}
                   >
                     <div className="max-w-full flex flex-col items-center">
@@ -257,7 +260,7 @@ export default function StoryDetails({ params }: { params: { id: number } }) {
                         <div className="book-3d relative min-w-[180px] min-h-[270px] md:max-w-[250px] lg:group-hover:scale-105 transition-all duration-300">
                           <Image
                             className="object-cover w-full h-full align-middle min-w-[180px] min-h-[270px] md:max-w-[250px]"
-                            src={val.image}
+                            src={val?.image}
                             height={270}
                             width={180}
                             alt="Product"

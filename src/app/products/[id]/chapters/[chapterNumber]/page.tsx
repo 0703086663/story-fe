@@ -6,7 +6,7 @@ import React from 'react';
 import axios from 'axios';
 import Header from '@/components/Header/Header';
 import { useRouter } from 'next/navigation';
-
+import _ from 'lodash';
 export default function ChapterDetailsPage({
   params,
 }: {
@@ -14,8 +14,8 @@ export default function ChapterDetailsPage({
 }) {
   const router = useRouter();
   const [chapter, setChapter] = useState<any>(null);
-  const [full, setFull] = useState<any>(null);
   const [token, setToken] = React.useState('');
+  const [rows, setRows] = useState<any>([]);
 
   React.useLayoutEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
@@ -26,7 +26,13 @@ export default function ChapterDetailsPage({
       .then(function (response) {
         setChapter(response.data);
       });
+
+    axios.get(`http://localhost:3001/chapter`).then(function (response) {
+      setRows(_.uniq(response.data.map(v => v.chapterNumber)));
+    });
   }, []);
+  console.log(rows)
+
 
   return (
     <>
@@ -41,6 +47,7 @@ export default function ChapterDetailsPage({
               <Button
                 variant="contained"
                 className="bg-gray-400 hover:bg-gray-600"
+                disabled={chapter?.chapterNumber - 1 === 0}
                 onClick={() =>
                   router.push(
                     `/products/${params?.id}/chapters/${chapter?.chapterNumber - 1}`,
@@ -61,6 +68,7 @@ export default function ChapterDetailsPage({
 
             <Button
               variant="contained"
+              disabled={chapter?.chapterNumber + 1 > rows.length}
               onClick={() =>
                 router.push(
                   `/products/${params?.id}/chapters/${chapter?.chapterNumber + 1}`,
