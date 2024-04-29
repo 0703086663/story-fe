@@ -26,16 +26,18 @@ export default function Home() {
   const [rows, setRows] = useState<any>([]);
   const [favs, setFavs] = useState<any>([]);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     setToken(localStorage.getItem('authToken') || '');
     axios.get('http://localhost:3001/product').then(function (response) {
       setRows(response.data);
     });
+  }, []);
 
+  useEffect(() => {
     if (token) {
       fetchFavs();
     }
-  }, []);
+  }, [token]);
 
   const fetchFavs = () => {
     axios
